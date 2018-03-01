@@ -2156,7 +2156,7 @@ size_t utp_process_incoming(UTPSocket *conn, const byte *packet, size_t len, boo
 		// transition over to the connected state.
 
 		// Incoming connection completion
-		if (pk_flags == ST_DATA && conn->state == CS_SYN_RECV) {
+		if ((pk_flags == ST_DATA || pk_flags == ST_FIN) && conn->state == CS_SYN_RECV) {
 			conn->state = CS_CONNECTED;
 		}
 
