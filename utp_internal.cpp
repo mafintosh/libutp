@@ -719,6 +719,11 @@ void UTPSocket::schedule_ack()
 		log(UTP_LOG_DEBUG, "schedule_ack");
 		#endif
 		ida = ctx->ack_sockets.Append(this);
+    #ifdef _WIN32
+    // seems needed to make acks work on windows
+    // with libuv ...
+		utp_issue_deferred_acks(ctx);
+		#endif
 	} else {
 		#if UTP_DEBUG_LOGGING
 		log(UTP_LOG_DEBUG, "schedule_ack: already in list");
