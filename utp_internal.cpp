@@ -154,9 +154,15 @@ enum {
 	ST_NUM_STATES,		// used for bounds checking
 };
 
+#if UTP_DEBUG_LOGGING
 static const cstr flagnames[] = {
 	"ST_DATA","ST_FIN","ST_STATE","ST_RESET","ST_SYN"
 };
+
+static const cstr statenames[] = {
+	"UNINITIALIZED", "IDLE","SYN_SENT", "SYN_RECV", "CONNECTED","CONNECTED_FULL","DESTROY_DELAY","RESET","DESTROY"
+};
+#endif
 
 enum CONN_STATE {
 	CS_UNINITIALIZED = 0,
@@ -167,10 +173,6 @@ enum CONN_STATE {
 	CS_CONNECTED_FULL,
 	CS_RESET,
 	CS_DESTROY
-};
-
-static const cstr statenames[] = {
-	"UNINITIALIZED", "IDLE","SYN_SENT", "SYN_RECV", "CONNECTED","CONNECTED_FULL","DESTROY_DELAY","RESET","DESTROY"
 };
 
 struct OutgoingPacket {
@@ -1971,7 +1973,7 @@ size_t utp_process_incoming(UTPSocket *conn, const byte *packet, size_t len, boo
 		if (pkt == 0 || pkt->transmissions == 0) continue;
 		assert((int)(pkt->payload) >= 0);
 		acked_bytes += pkt->payload;
-		if (conn->mtu_probe_seq && seq == conn->mtu_probe_seq) {
+		if (conn->mtu_probe_seq && (uint32) seq == conn->mtu_probe_seq) {
 			conn->mtu_floor = conn->mtu_probe_size;
 			conn->mtu_search_update();
 			conn->log(UTP_LOG_MTU, "MTU [ACK] floor:%d ceiling:%d current:%d"
